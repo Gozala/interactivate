@@ -45,6 +45,7 @@ var makeView = (function() {
     "background-clip: padding-box",
     "background: url('" + uri + "') top left repeat-x",
     "-webkit-transform: rotate(180deg)",
+    "-o-transform: rotate(180deg)",
     "transform: rotate(180deg)"
   ].join(";"))
 
@@ -57,29 +58,20 @@ var makeView = (function() {
     "position: relative",
     "padding: 10px",
     "margin: 0px",
-    "display: -webkit-box",
-    "display: -moz-box",
-    "display: -moz-flex;",
-    "-webkit-box-flex: 2",
-    "-moz-box-flex: 2",
-    "box-flex: 2",
     "width: 100%"
   ].join(";"))
 
   template.querySelector(".cm-live-output-head").setAttribute("style", [
-    "-webkit-box-flex: 0",
-    "-moz-box-flex: 0",
-    "box-flex: 0",
+    "display: table-cell",
     "margin: 0 10px 0 0",
-    "whitespace: pre",
+    "white-space: pre",
     "color: white",
     "text-shadow: 0px 1px 5px #000"
   ].join(";"))
   template.querySelector(".cm-live-output-body").setAttribute("style", [
-    "-webkit-box-flex: 1",
-    "-moz-box-flex: 1",
-    "box-flex: 1",
-    "padding-right: 30px"
+    "display: table-cell",
+    "padding-right: 30px",
+    "width: 100%"
   ].join(";"))
 
   return function makeView(editor, line) {

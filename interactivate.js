@@ -160,8 +160,8 @@ module.exports = function interactive(editor) {
     if (!editor.getOption("interactiveEnabled")) throw CodeMirror.Pass
     editor.operation(function() {
       var cursor = editor.getCursor()
-      editor.replaceSelection("\n\n// =>\n")
-      editor.setCursor({ line: cursor.line + 3, ch: 0 })
+      editor.replaceSelection("\n// =>\n")
+      editor.setCursor({ line: cursor.line + 2, ch: 0 })
     })
   }
 

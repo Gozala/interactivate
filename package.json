@@ -37,7 +37,7 @@
     }
   ],
   "dependencies": {
-    "method": "~1.0.0",
+    "method": "~1.0.1",
     "diffpatcher": "~1.0.0"
   }
 }

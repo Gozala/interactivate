@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# v0.0.4 5
+
+../index.html
+./codemirror.css
+./solarized.css
+./main.js
+./codemirror.js
+./javascript.js
+
+NETWORK:
+*

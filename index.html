@@ -64,7 +64,8 @@ mathematica  // If result of expression is HTML it's renderred inline!
 
 var position = document.createElement("h1")
 document.body.addEventListener("mousemove", function(event) {
-  position.textContent = "Your mouse position => x:" + event.x + " y:" + event.y
+  position.textContent = "Your mouse position => x:" + event.clientX +
+                         " y:" + event.clientY
 }, false)
 position
 
@@ -80,6 +81,8 @@ position.style.color = "green"
 // special marker and see what happens :)
 
 editor.setOption("lineNumbers", false) // set to true to show lines numbers
+// editor.setOption("theme", "solarized light") // or uncomment to change theme
+
 
 // =>
 

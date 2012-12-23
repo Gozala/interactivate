@@ -2,6 +2,10 @@
 
 ## 0.1.1 / 2012-12-22
 
+  - Fix bug in the introduction code.
+
+## 0.1.1 / 2012-12-22
+
   - Write introduction displayed in the first run.
 
 ## 0.1.0 / 2012-12-22

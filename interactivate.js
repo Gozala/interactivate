@@ -175,6 +175,15 @@ module.exports = function interactive(editor) {
 
   editor.on("change", throttle(calculate, editor.getOption("interactiveSpeed")))
 
+  editor.on("cursorActivity", throttle(function(editor) {
+    var line = editor.getCursor().line
+    var marker = editor.findMarksAt({ line: line })[0]
+    if (marker) {
+      marker.clear()
+      markOnMove(editor, line, marker.replacedWith.firstChild)
+    }
+  }, 300))
+
   function print(editor) {
     if (!editor.getOption("interactiveEnabled")) throw CodeMirror.Pass
     editor.operation(function() {

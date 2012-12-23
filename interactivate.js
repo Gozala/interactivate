@@ -66,7 +66,8 @@ var makeView = (function() {
     "margin: 0 10px 0 0",
     "white-space: pre",
     "color: white",
-    "text-shadow: 0px 1px 5px #000"
+    "text-shadow: 0px 1px 5px #000",
+    "vertical-align: top"
   ].join(";"))
   template.querySelector(".cm-live-output-body").setAttribute("style", [
     "display: table-cell",

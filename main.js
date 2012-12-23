@@ -5,6 +5,7 @@ var interactivate = require("./interactivate")
 var CodeMirror = require("./code-mirror")
 var activeLine = require("./code-mirror/active-line")
 var persist = require("./code-mirror/persist")
+var share = require("./code-mirror/share")
 
 var editor = CodeMirror(document.body, {
   electricChars: true,
@@ -28,5 +29,7 @@ global.editor = editor
 interactivate(editor)
 // Enable active line highlighting.
 activeLine(editor)
+// Enable sharing
+share(editor)
 // Enable persistence of the editor buffer.
 persist(editor)

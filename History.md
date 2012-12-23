@@ -1,5 +1,9 @@
 # Changes
 
+## 0.1.1 / 2012-12-22
+
+  - Write introduction displayed in the first run.
+
 ## 0.1.0 / 2012-12-22
 
   - Fix bunch of bugs that messed up session when adding / removing

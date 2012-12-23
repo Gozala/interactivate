@@ -6,7 +6,6 @@ var render = require("./render")
 var CodeMirror = require("./code-mirror")
 
 CodeMirror.defaults.interactiveEnabled = true
-CodeMirror.defaults.interactiveKey = "Cmd-Enter"
 CodeMirror.defaults.interactiveSpeed = 300
 CodeMirror.defaults.interactiveSeparator = /^\/\/ \=\>[^\n]*$/m
 
@@ -195,5 +194,7 @@ module.exports = function interactive(editor) {
     })
   }
 
-  CodeMirror.keyMap.default[editor.getOption("interactiveKey")] = print
+  CodeMirror.keyMap.macDefault["Cmd-Enter"] = print
+  CodeMirror.keyMap.pcDefault["Ctrl-Enter"] = print
+
 }

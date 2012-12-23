@@ -75,51 +75,83 @@ var makeView = (function() {
     "width: 100%"
   ].join(";"))
 
-  return function makeView(editor, line) {
+  return function makeView(id) {
     var view = template.cloneNode(true)
-
-    editor.markText({ line: line, ch: 0 },
-                    { line: line + 1, ch: 0 },
-                    { atomic: true, replacedWith: view })
+    view.id = "interactivate-out-" + id
+    var label = view.querySelector(".cm-live-output-head")
+    label.textContent = "Out[" + id + "] = "
 
     return view
   }
 })()
 
+var slicer = Array.prototype.slice
+function throttle(f, delay) {
+  var id = 0
+  var params = [f, delay].concat(slicer.call(arguments, 2))
+  return function throttled() {
+    clearTimeout(id, throttled)
+    id = setTimeout.apply(this, params.concat(slicer.call(arguments)))
+  }
+}
+
+function markOnMove(editor, line, view) {
+  editor.on("cursorActivity", function move(editor) {
+    if (line !== editor.getCursor().line) {
+      editor.off("cursorActivity", move)
+      editor.markText({ line: line, ch: 0 }, { line: line },
+                      { replacedWith: view, atomic: true })
+    }
+  })
+}
+
+function mark(editor, line, id, content) {
+  var cursor = editor.getCursor()
+  var doc = editor.getDoc()
+  var view = document.getElementById("interactivate-out-" + id) || makeView(id)
+  var body = view.querySelector(".cm-live-output-body")
+  body.innerHTML = ""
+  if (content instanceof Element) body.appendChild(content)
+  else body.textContent = content
+
+  if (cursor.line === line) return markOnMove(editor, line, view)
+
+  var marker = doc.findMarksAt({ line: line })[0]
+  if (marker) marker.clear()
+  doc.markText({ line: line, ch: 0 }, { line: line },
+               { atomic: true, replacedWith: view })
+
+
+}
+
 module.exports = function interactive(editor) {
   var state = {}
-  var View = {}
   var Out = {}
   var id = -1
 
   window.Out = Out
 
   function apply(delta) {
-    Object.keys(delta).forEach(function(id) {
-      var In = delta[id]
+    Object.keys(delta).sort().reduce(function(_, id) {
       editor.operation(function() {
+        var In = delta[id]
         if (In === null) {
-          delete Out[id]
-          delete View[id]
-        } else {
-          var view = View[id] || (View[id] = makeView(editor, In.line))
+          Out[id] = null
+        }
+        // If upper sections are modified delta will contain updated line
+        // number but source will be unchanged in such case nothing changed
+        // so just skip the line.
+        else if (In.source) {
           try {
             Out[id] = window.eval(In.source)
           } catch (error) {
             Out[id] = error
           }
-          var label = view.querySelector(".cm-live-output-head")
-          var code = view.querySelector(".cm-live-output-body")
-          label.textContent = "Out[" + id + "] = "
-          code.innerHTML = "<span></span>"
-          var out = render(Out[id])
-          if (out instanceof Element)
-            code.replaceChild(out, code.children[0])
-          else
-            code.textContent = out
+
+          mark(editor, In.line || state[id].line, id, Out[id])
         }
       })
-    })
+    }, null)
     state = patch(state, delta)
   }
 
@@ -127,27 +159,21 @@ module.exports = function interactive(editor) {
     var source = editor.getValue()
     var separator = editor.getOption("interactiveSeparator")
     var sections = source.split(separator)
-    sections.pop()
+    sections.pop() // last section does not has execution marker so skip it.
     var update = Object.keys(sections).reduce(function(result, index) {
       var source = sections[index]
-      var out = result.out + source.split("\n").length - 1
-      result.out = out
-      result.state[index] = {
-        source: source,
-        line: out
-      }
+      var line = result.line + source.split("\n").length - 1
+      result.line = line
+      result.state[index] = { source: source, line: line }
 
       return result
-    }, { out: 0, state: {} })
+    }, { line: 0, state: {} })
 
     var delta = diff(state, update.state)
     apply(delta)
   }
 
-  editor.on("change", function(editor, change) {
-    clearTimeout(id)
-    id = setTimeout(calculate, editor.getOption("interactiveSpeed"), change)
-  })
+  editor.on("change", throttle(calculate, editor.getOption("interactiveSpeed")))
 
   function print(editor) {
     if (!editor.getOption("interactiveEnabled")) throw CodeMirror.Pass

@@ -1,5 +1,16 @@
 # Changes
 
+## 0.1.0 / 2012-12-22
+
+  - Fix bunch of bugs that messed up session when adding / removing
+    sections from the middle of the code.
+  - Output now only rendered once cursor navigate from the section marker
+    `// =>` line.
+  - Positioning cursor on the output switches output back to text
+    representation.
+  - Save code changes into location hash so that it can be shared.
+  - Style fixes that make outputs rendered same across different browsers.
+
 ## 0.0.2 / 2012-11-11
 
   - Improve error reporting

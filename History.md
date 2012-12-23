@@ -1,6 +1,11 @@
 # Changes
 
-## 0.1.1 / 2012-12-22
+## 0.1.3 / 2012-12-22
+
+  - Fix re-encoding issues on multiple refresh.
+  - Add `Ctrl Enter` shortcut for PC.
+
+## 0.1.2 / 2012-12-22
 
   - Fix bug in the introduction code.
 

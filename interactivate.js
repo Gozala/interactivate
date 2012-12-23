@@ -120,8 +120,6 @@ function mark(editor, line, id, content) {
   if (marker) marker.clear()
   doc.markText({ line: line, ch: 0 }, { line: line },
                { atomic: true, replacedWith: view })
-
-
 }
 
 module.exports = function interactive(editor) {
@@ -135,6 +133,7 @@ module.exports = function interactive(editor) {
     Object.keys(delta).sort().reduce(function(_, id) {
       editor.operation(function() {
         var In = delta[id]
+        var out = void(0)
         if (In === null) {
           Out[id] = null
         }
@@ -143,12 +142,15 @@ module.exports = function interactive(editor) {
         // so just skip the line.
         else if (In.source) {
           try {
-            Out[id] = window.eval(In.source)
+            out = window.eval(In.source)
           } catch (error) {
-            Out[id] = error
+            out = error
           }
 
-          mark(editor, In.line || state[id].line, id, Out[id])
+          if (out !== Out[id]) {
+            Out[id] = out
+            mark(editor, In.line || state[id].line, id, Out[id])
+          }
         }
       })
     }, null)

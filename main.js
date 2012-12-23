@@ -8,6 +8,7 @@ var persist = require("./code-mirror/persist")
 var share = require("./code-mirror/share")
 
 var editor = CodeMirror(document.body, {
+  value: document.getElementById("intro").textContent.substr(1),
   electricChars: true,
   autofocus: true,
   theme: "solarized dark",

@@ -13,6 +13,95 @@
     </style>
   </head>
   <body>
+<script type=template/javascript id=intro>
+// This is interactivate, live-coding experiment inspired by Methamatica
+// notepad & Bret Victor’s "Inventing on Principle"
+
+// Let's get find out how it works. Below you can see a function for
+// calculating "Fibonacci numbers". It takes number `n` as argument
+// and returns that many fibonacci numbers
+
+function fibs(n) {
+  var result = [0, 1]
+  while (result.length < n) {
+    var count = result.length
+    result.push(result[count - 2] + result[count - 1])
+  }
+  return result.slice(0, n)
+}
+
+// You can also see results of the function displayed right under it.
+// Go ahead and modify argument to `17` and see how output updates.
+// BTW you can go ahead and modify function defintion too and see the
+// how that affects output!
+
+fibs(8)
+
+// => [0,1,1,2,3,5,8,13]
+
+// BTW if you place curret over the output above you'll see plain text
+// that starts with `// =>`. That's what triggers all the magic try
+
+fibs(10)
+
+// Go ahead, type `// =>` on the next line and press enter!
+// You could also delete this outputs using simlpe backspace.
+// There is also a convinienc shortcut `⌘ + enter`.
+
+// Another cool thing is that you can simply share snippets you've typed by
+// sharing URLs, note that code typed here is part of URL and it updates as
+// you make changes
+
+// Now things get even more intersting when working with UI for example HTML:
+
+var mathematica = new Image()
+mathematica.src = "http://blog.wolfram.com/data/uploads/2010/11/m8-logo.jpg"
+mathematica  // If result of expression is HTML it's renderred inline!
+
+// =>
+
+// Or something more interesting and more interactive like this
+
+var position = document.createElement("h1")
+document.body.addEventListener("mousemove", function(event) {
+  position.textContent = "Your mouse position => x:" + event.x + " y:" + event.y
+}, false)
+position
+
+// =>
+
+// Note that edits update outputs of the sections, but you still
+// could cause changes to other outputs, for example change color
+// to "red" and observe results :)
+
+position.style.color = "green"
+
+// In fact you can even play with this editor right from here just insert
+// special marker and see what happens :)
+
+editor.setOption("lineNumbers", false) // set to true to show lines numbers
+
+// =>
+
+// BTW all of this is just plain text you can copy & paste it and see
+// for yourself!
+
+// For more details check out following demo video:
+
+var video = document.createElement("iframe")
+video.src = "http://player.vimeo.com/video/53311490?badge=0"
+video.width = 400
+video.height = 300
+video
+
+// =>
+
+var bye = document.createElement("h1")
+bye.textContent = "Bye and have fun hacking live!"
+bye
+
+// =>
+</script>
     <a href="https://github.com/gozala/interactivate">
       <img style="z-index: 3; position: absolute; top: 0; right: 0; border: 0;"
            src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"

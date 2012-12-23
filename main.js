@@ -22,6 +22,8 @@ var editor = CodeMirror(document.body, {
   }
 })
 
+global.editor = editor
+
 // Enable interactive mode for this editor.
 interactivate(editor)
 // Enable active line highlighting.

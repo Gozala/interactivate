@@ -5,7 +5,7 @@ Takes editor and enables persists changes to the buffer across the sessions.
 **/
 function share(editor) {
   var shared = window.location.hash.substr(1)
-  if (shared) editor.setValue(shared)
+  if (shared) editor.setValue(decodeURIComponent(shared))
   editor.on("change", function() {
     location.hash = encodeURIComponent(editor.getValue())
   })

@@ -30,7 +30,7 @@ global.editor = editor
 interactivate(editor)
 // Enable active line highlighting.
 activeLine(editor)
-// Enable sharing
-share(editor)
 // Enable persistence of the editor buffer.
 persist(editor)
+// Enable sharing
+share(editor)

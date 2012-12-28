@@ -4,6 +4,7 @@ var diff = require("diffpatcher/diff")
 var patch = require("diffpatcher/patch")
 var render = require("./render")
 var CodeMirror = require("./code-mirror")
+var shoe = require("./shoe")
 
 CodeMirror.defaults.interactiveEnabled = true
 CodeMirror.defaults.interactiveSpeed = 300
@@ -127,6 +128,7 @@ module.exports = function interactive(editor) {
   var id = -1
 
   window.Out = Out
+  var host = shoe('http://localhost:9999/')
 
   function apply(delta) {
     Object.keys(delta).sort().reduce(function(_, id) {
@@ -140,16 +142,11 @@ module.exports = function interactive(editor) {
         // number but source will be unchanged in such case nothing changed
         // so just skip the line.
         else if (In.source) {
-          try {
-            out = window.eval(In.source)
-          } catch (error) {
-            out = error
-          }
-
-          if (out !== Out[id]) {
+          host.write(In.source)
+          host.once("data", function(out) {
             Out[id] = out
             mark(editor, In.line || state[id].line, id, Out[id])
-          }
+          })
         }
       })
     }, null)

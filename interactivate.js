@@ -4,7 +4,6 @@ var diff = require("diffpatcher/diff")
 var patch = require("diffpatcher/patch")
 var render = require("./render")
 var CodeMirror = require("./code-mirror")
-var shoe = require("./shoe")
 
 CodeMirror.defaults.interactiveEnabled = true
 CodeMirror.defaults.interactiveSpeed = 300
@@ -122,35 +121,41 @@ function mark(editor, line, id, content) {
                { atomic: true, replacedWith: view })
 }
 
+function send(packet) {
+  var event = document.createEvent("CustomEvent")
+  event.initCustomEvent("server", false, true, packet)
+  window.dispatchEvent(event)
+}
+
 module.exports = function interactive(editor) {
   var state = {}
   var Out = {}
   var id = -1
 
   window.Out = Out
-  var host = shoe('http://localhost:9999/')
+  window.addEventListener("client", function(event) {
+    var packet = event.detail
+    var id = packet.from
+    var out = packet.message
+    if (Out[id] !== out) {
+      editor.operation(function() {
+        Out[id] = out
+        mark(editor, state[id].line, id, out)
+      })
+    }
+  }, false)
 
   function apply(delta) {
-    Object.keys(delta).sort().reduce(function(_, id) {
-      editor.operation(function() {
-        var In = delta[id]
-        var out = void(0)
-        if (In === null) {
-          Out[id] = null
-        }
-        // If upper sections are modified delta will contain updated line
-        // number but source will be unchanged in such case nothing changed
-        // so just skip the line.
-        else if (In.source) {
-          host.write(In.source)
-          host.once("data", function(out) {
-            Out[id] = out
-            mark(editor, In.line || state[id].line, id, Out[id])
-          })
-        }
-      })
-    }, null)
     state = patch(state, delta)
+    Object.keys(delta).sort().reduce(function(_, id) {
+      var In = delta[id]
+      var out = void(0)
+      if (In === null) Out[id] = null
+      // If upper sections are modified delta will contain updated line
+      // number but source will be unchanged in such case nothing changed
+      // so just skip the line.
+      else if (In.source) send({ to: id, source: In.source })
+    }, null)
   }
 
   function calculate() {

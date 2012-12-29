@@ -1,32 +1,18 @@
 "use strict";
 
-var shoe = require("shoe")
-var http = require("http")
-var repl = require("repl")
-var vm = require("vm");
-var util = require("util")
-var Require = require("require-like")
-var path = require("path")
+function send(packet) {
+  var event = document.createEvent("CustomEvent")
+  event.initCustomEvent("client", false, true, packet)
+  window.dispatchEvent(event)
+}
 
-var server = http.createServer()
-var host = shoe(function(client) {
-  var module = { filename: path.join(process.cwd(), "interactive") }
-  var context = vm.createContext(global)
-  context.require = Require(module.filename)
-  context.module = module;
-
-  client.on("data", function(code) {
-    console.log(">>", code)
+function server() {
+  window.addEventListener("server", function(event) {
+    var packet = event.detail
     var result
-    try {
-      result = vm.runInContext(code, context)
-    } catch (error) {
-      result = error
-    }
-    console.log("<<", util.inspect(result))
-    client.write(util.inspect(result))
-  })
-})
-
-host.install(server)
-server.listen(9999)
+    try { result = window.eval(packet.source) }
+    catch (error) { result = error }
+    send({ from: packet.to, message: result })
+  }, false)
+}
+module.exports = server

@@ -1,13 +1,11 @@
 "use strict";
 
-var interactivate = require("./interactivate")
-
-var CodeMirror = require("./code-mirror")
-var activeLine = require("./code-mirror/active-line")
+var Editor = require("./core")
 var persist = require("./code-mirror/persist")
 var share = require("./code-mirror/share")
+var server = require("./server")
 
-var editor = CodeMirror(document.body, {
+var editor = Editor(document.body, {
   value: document.getElementById("intro").textContent.substr(1),
   electricChars: true,
   autofocus: true,
@@ -24,13 +22,12 @@ var editor = CodeMirror(document.body, {
   }
 })
 
-global.editor = editor
+// Start an evaluation server
+server(editor)
 
-// Enable interactive mode for this editor.
-interactivate(editor)
-// Enable active line highlighting.
-activeLine(editor)
 // Enable persistence of the editor buffer.
 persist(editor)
 // Enable sharing
 share(editor)
+
+global.editor = editor

@@ -1,5 +1,10 @@
 # Changes
 
+## 0.2.0 / 2012-12-28
+
+  - Switch to client / server type evaluation scheme so that different
+    evaluation hosts can be plugged in.
+
 ## 0.1.3 / 2012-12-22
 
   - Fix re-encoding issues on multiple refresh.

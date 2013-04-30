@@ -1,5 +1,10 @@
 # Changes
 
+## 0.2.1 / 2012-12-28
+
+  - Fix bug in rendering config.
+
+
 ## 0.2.0 / 2012-12-28
 
   - Switch to client / server type evaluation scheme so that different

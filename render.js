@@ -6,7 +6,7 @@ var util = require("util")
 
 // Render function takes arbitrary data structure and returns something
 // that can visually represent it.
-var render = method("render")
+var render = method("render@interactivate")
 
 render.define(function(value) {
   return util.inspect(value)

@@ -140,7 +140,7 @@ module.exports = function interactive(editor) {
     if (Out[id] !== out) {
       editor.operation(function() {
         Out[id] = out
-        mark(editor, state[id].line, id, out)
+        mark(editor, state[id].line, id, render(out))
       })
     }
   }, false)

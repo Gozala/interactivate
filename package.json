@@ -1,7 +1,7 @@
 {
   "name": "interactivate",
   "id": "interactivate",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Interactive code editing in browser",
   "keywords": [
     "interactivate"
@@ -37,7 +37,7 @@
     }
   ],
   "dependencies": {
-    "method": "~1.0.1",
+    "method": "~2.0.0",
     "diffpatcher": "~1.0.0"
   }
 }

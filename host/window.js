@@ -7,12 +7,13 @@ function send(packet) {
 }
 
 function server() {
+  var Out = window.Out = []
   window.addEventListener("server", function(event) {
     var packet = event.detail
-    var result
-    try { result = window.eval(packet.source) }
-    catch (error) { result = error }
-    send({ from: packet.to, message: result })
+    try { Out[packet.to] = window.eval(packet.source) }
+    catch (error) { Out[packet.to] = error }
+    send({ from: packet.to, message: Out[packet.to] })
   }, false)
 }
+
 module.exports = server

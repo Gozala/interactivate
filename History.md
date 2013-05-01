@@ -1,5 +1,9 @@
 # Changes
 
+## 0.3.0 / 2013-05-01
+
+  - Decouple interactivate from codemirror.
+
 ## 0.2.1 / 2012-12-28
 
   - Fix bug in rendering config.

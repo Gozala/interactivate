@@ -3,91 +3,14 @@
 var diff = require("diffpatcher/diff")
 var patch = require("diffpatcher/patch")
 var render = require("./render")
+var output = require("./output")
+var makeOutput = output.makeOutput
+var writeOutput = output.write
 
-function viewMaker(document) {
-  var uri = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAMCAYAAABBV8wuAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGpJREFUeNpi/P//PwM2wMSAA7CACEYggLKZgfgvEP8BCYAwKxALAjEPEH8B4g9MUI5IWlqayevXr9eCaCBfGGSSVnJysu/Xr1+fAx3y/9u3by9BfIb29vZCmCAMgCQZ/+NwL07nUlECIMAAMr41sxvv6oEAAAAASUVORK5CYII="
-  var template = document.createElement("div")
-
-  template.style.marginLeft = "-10px"
-  template.style.padding = "0"
-  template.style.position = "relative"
-  template.style.marginRight = "-10px"
-  template.style.whiteSpace = "normal"
-  template.style.textShadow = "none"
-
-  template.innerHTML = [
-    "  <div class='cm-live-output-border-top'> </div>",
-    "  <div class='cm-live-output-box'>",
-    "    <h1 class='cm-live-output-head'>Out[0]</h1>",
-    "    <pre class='cm-live-output-body'></pre>",
-    "  </div>",
-    "  <div class='cm-live-output-border-bottom'></div>",
-  ].join("\n")
-
-    template.querySelector(".cm-live-output-border-top").setAttribute("style", [
-    "position: relative",
-    "z-index: 2",
-    "height: 12px",
-    "background-clip: padding-box",
-    "background: url('" + uri + "') top right repeat-x"
-  ].join(";"))
-
-  template.querySelector(".cm-live-output-border-bottom").setAttribute("style", [
-    "position: relative",
-    "z-index: 2",
-    "height: 12px",
-    "background-clip: padding-box",
-    "background: url('" + uri + "') top left repeat-x",
-    "-webkit-transform: rotate(180deg)",
-    "-o-transform: rotate(180deg)",
-    "transform: rotate(180deg)"
-  ].join(";"))
-
-  template.querySelector(".cm-live-output-box").setAttribute("style", [
-    "-moz-box-shadow: 0 0 30px -2px #000",
-    "-webkit-box-shadow: 0 0 30px -2px #000",
-    "box-shadow: 0 0 30px -2px #000",
-    "color: black",
-    "background: white",
-    "position: relative",
-    "padding: 10px",
-    "margin: 0px",
-    "width: 100%"
-  ].join(";"))
-
-  template.querySelector(".cm-live-output-head").setAttribute("style", [
-    "display: table-cell",
-    "margin: 0 10px 0 0",
-    "white-space: pre",
-    "color: white",
-    "text-shadow: 0px 1px 5px #000",
-    "vertical-align: top"
-  ].join(";"))
-  template.querySelector(".cm-live-output-body").setAttribute("style", [
-    "display: table-cell",
-    "padding-right: 30px",
-    "width: 100%"
-  ].join(";"))
-
-  return function makeView(id) {
-    var view = template.cloneNode(true)
-    view.id = "interactivate-out-" + id
-    var label = view.querySelector(".cm-live-output-head")
-    label.textContent = "Out[" + id + "] = "
-    view.body = view.querySelector(".cm-live-output-body")
-
-    return view
-  }
-}
-
-function makeView(editor, id) {
-  return editor[MakeView](id)
-}
 
 var Out = "out@interactivate"
 var In = "in@interactivate"
 var Reciever = "receiver@interactivate"
-var MakeView = "make-view@interactivate"
 
 function makeOptionGetter(name) {
   return function getOption(editor) {
@@ -177,57 +100,18 @@ function getMarkerFor(editor, view) {
   return null
 }
 
+
 function write(editor, changes) {
   console.log("<<<", changes)
   var doc = editor.getDoc()
   Object.keys(changes).sort().reduce(function(_, id) {
-    if (!editor[Out][id]) editor[Out][id] = makeView(editor, id)
+    if (!editor[Out][id]) editor[Out][id] = makeOutput(id)
 
-    var view = editor[Out][id]
+    var output = editor[Out][id]
     var change = changes[id]
+    if (change === null) editor[Out][id] = null
 
-    if (change === null) return editor[Out][id] = null
-
-    if (change.pending) view.style.opacity = "0.2"
-    else if (change.pending === null) view.style.opacity = ""
-
-    if (change.result) {
-      var content = change.result
-      view.body.innerHTML = ""
-      if (content instanceof Element) view.body.appendChild(content)
-      else view.body.textContent = content
-    }
-
-
-    if (change.visible === true || change.line) {
-      var line = change.line || editor[In][id].line
-
-      var marker = doc.findMarksAt({line: line})[0]
-      if (marker) marker.clear()
-
-      doc.markText({line: line, ch: 0},
-                   {line: line },
-                   {atomic: true,
-                    collapsed: true,
-                    replacedWith: view,
-                    className: "interactivate-output"})
-      view.parentNode.style.display = "block"
-
-      /*
-      if (!view.parentNode)
-        editor.addLineWidget(line - 1, view, {showIfHidden: true})
-      else
-        view.style.display = ""
-      */
-    }
-
-    if (change.visible === false) {
-      var line = change.line || editor[In][id].line
-      var marker = doc.findMarksAt({line: line})[0]
-      if (marker && marker.className === "interactivate-output")
-        marker.clear()
-      //view.style.display = "none"
-    }
+    writeOutput(output, editor, change)
   }, null)
   editor[In] = patch(editor[In], changes)
 }
@@ -264,7 +148,7 @@ var hideOutput = throttle(function render(editor) {
   var changes = Object.keys(state).reduce(function(delta, id) {
     var value = state[id]
     if (value.line === line) delta[id] = {visible: false}
-    else if (!value.visible) delta[id] = {visible: true}
+    else if (!value.visible) delta[id] = {visible: true, line: value.line}
 
     return delta
   }, [])
@@ -276,7 +160,6 @@ var hideOutput = throttle(function render(editor) {
 function tooglePlugin(editor, value) {
   if (value) {
     editor[Reciever] = recieve.bind(recieve, editor)
-    editor[MakeView] = viewMaker(editor.display.input.ownerDocument)
     editor[In] = {}
     editor[Out] = {}
     editor.on("change", renderOutput)
@@ -287,7 +170,6 @@ function tooglePlugin(editor, value) {
     editor.off("cursorActivity", hideOutput)
     window.removeEventListener("client", editor[Reciever], false)
     editor[Reciever] = null
-    editor[MakeView] = null
     editor[In] = null
     editor[Out] = null
   }

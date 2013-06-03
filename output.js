@@ -62,13 +62,20 @@ function write(output, editor, state) {
                     makeSection(view, type)
 
       var output = result[type]
-      var body = section.querySelector(".section-body")
-      var head = section.querySelector(".section-head")
 
-      head.textContent = output.title
-      head.style.display = output.title ? "" : "none"
+      if (output) {
+        var body = section.querySelector(".section-body")
+        var head = section.querySelector(".section-head")
 
-      render(output.value, body)
+        head.textContent = output.title
+        head.style.display = output.title ? "" : "none"
+
+        render(output.value, body)
+
+        section.style.display = ""
+      } else {
+        section.style.display = "none"
+      }
 
       return view
     }, view.body)

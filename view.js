@@ -34,7 +34,8 @@ var BOX_STYLE = [
   "background: white",
   "position: relative",
   "margin: 0px",
-  "width: 100%"
+  "width: 100%",
+  "overflow: auto"
 ].join(";")
 
 var HEAD_STYLE = [

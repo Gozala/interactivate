@@ -2,7 +2,6 @@
 
 var diff = require("diffpatcher/diff")
 var patch = require("diffpatcher/patch")
-var render = require("./render")
 var output = require("./output")
 var makeOutput = output.makeOutput
 var writeOutput = output.write
@@ -75,7 +74,7 @@ function recieve(editor, event) {
   var packet = event.detail
   var delta = {}
   delta[packet.from] = {pending: null,
-                        result: render(packet.message)}
+                        result: packet.result}
   write(editor, delta)
 }
 
@@ -102,7 +101,6 @@ function getMarkerFor(editor, view) {
 
 
 function write(editor, changes) {
-  console.log("<<<", changes)
   var doc = editor.getDoc()
   Object.keys(changes).sort().reduce(function(_, id) {
     if (!editor[Out][id]) editor[Out][id] = makeOutput(id)
@@ -120,7 +118,6 @@ function post(changes) {
   Object.keys(changes).reduce(function(_, id) {
     var change = changes[id]
     if (change && change.input) {
-      console.log(">>", id, change)
       send({ to: id, source: change.input })
     }
   }, null)

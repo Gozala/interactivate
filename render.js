@@ -8,15 +8,23 @@ var util = require("util")
 // that can visually represent it.
 var render = method("render@interactivate")
 
-render.define(function(value) {
-  return util.inspect(value)
+render.define(Object, function(value, view) {
+  return view.textContent = util.inspect(value)
 })
 
-render.define(Error, function(error) {
-  return String(error)
+render.define(function(value, view) {
+  return view.textContent = value
 })
 
-render.define(Element, function(element) {
+render.define(Error, function(error, view) {
+  return view.textContent = String(error)
+})
+
+render.define(Element, function(element, view) {
+  if (view.firstChild !== element) {
+    view.innerHTML = ""
+    view.appendChild(element)
+  }
   return element
 })
 

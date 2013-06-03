@@ -1,4 +1,5 @@
 var makeView = require("./view").makeView
+var render = require("./render")
 
 function Output(id) {
   this.id = id
@@ -36,6 +37,17 @@ function move(output, editor, line) {
   }
 }
 
+function makeSection(body, type) {
+  var view = document.createElement("section")
+  view.className = "section-" + type
+  view.setAttribute("style", "width: 100%; float: left;")
+
+  view.innerHTML = "<h3 class=section-head></h3>" +
+                   "<div class=section-body></div>"
+  body.appendChild(view)
+  return view
+}
+
 function write(output, editor, state) {
   var view = output.view || (output.view = makeView(editor, output.id))
   if (state === null) return clear(output)
@@ -44,10 +56,22 @@ function write(output, editor, state) {
   else if (state.pending === null) output.view.style.opacity = ""
 
   if (state.result) {
-    var content = state.result
-    view.body.innerHTML = ""
-    if (content instanceof Element) view.body.appendChild(content)
-    else view.body.textContent = content
+    var result = state.result
+    Object.keys(result).reduce(function(view, type) {
+      var section = view.querySelector(".section-" + type) ||
+                    makeSection(view, type)
+
+      var output = result[type]
+      var body = section.querySelector(".section-body")
+      var head = section.querySelector(".section-head")
+
+      head.textContent = output.title
+      head.style.display = output.title ? "" : "none"
+
+      render(output.value, body)
+
+      return view
+    }, view.body)
   }
 
   if (state.visible === true) mark(output, editor, state.line)

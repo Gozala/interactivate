@@ -82,7 +82,7 @@ function print(editor) {
   if (!editor.getOption("interactivate")) throw editor.constructor.Pass
   editor.operation(function() {
     var cursor = editor.getCursor()
-    editor.replaceSelection("\n// =>\n")
+    editor.replaceSelection(editor.getOption("interactiveSection"))
     editor.setCursor({ line: cursor.line + 2, ch: 0 })
   })
 }
@@ -175,9 +175,10 @@ function tooglePlugin(editor, value) {
 function install(CodeMirror) {
   // Fix constructor property so that it could be accessed from the
   // instance.
-  CodeMirror.prototype.constructor = CodeMirror;
+  CodeMirror.prototype.constructor = CodeMirror
   CodeMirror.defaults.interactiveSpeed = 300
   CodeMirror.defaults.interactiveSeparator = /^\/\/ \=\>[^\n]*$/m
+  CodeMirror.defaults.interactiveSection = "\n// =>\n"
   CodeMirror.keyMap.macDefault["Cmd-Enter"] = print
   CodeMirror.keyMap.pcDefault["Ctrl-Enter"] = print
 

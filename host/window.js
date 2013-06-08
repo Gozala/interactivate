@@ -13,11 +13,13 @@ function server() {
     var result = null
     try {
       Out[packet.to] = window.eval(packet.source)
-      result = {result: {value: Out[packet.to]}}
+      result = {result: {value: Out[packet.to]},
+                error: null}
     }
     catch (error) {
       Out[packet.to] = error
-      result = {error: {value: error}}
+      result = {result: null,
+                error: {value: error}}
     }
     send({ from: packet.to, result: result })
   }, false)

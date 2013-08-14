@@ -1,7 +1,7 @@
 {
   "name": "interactivate",
   "id": "interactivate",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Interactive code editing in browser",
   "keywords": [
     "interactivate"

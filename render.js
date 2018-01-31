@@ -13,17 +13,18 @@ render.define(Object, function (value, view) {
 })
 
 render.define(function (value, view) {
-  if (value instanceof Node) {
-    if (view.firstChild !== value) {
-      view.innerHTML = ""
-      view.appendChild(value)
-    }
-  }
   return view.textContent = value
 })
 
 render.define(Error, function (error, view) {
   return view.textContent = String(error)
+})
+
+render.implement(Node.prototype, function (node, view) {
+  if (view.firstChild !== node) {
+    view.innerHTML = ""
+    view.appendChild(node)
+  }
 })
 
 module.exports = render

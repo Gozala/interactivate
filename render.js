@@ -14,7 +14,7 @@ render.define(Object, function (value, view) {
 
 render.define(function (value, view) {
   if (value instanceof Node) {
-    if (view.firstChild !== element) {
+    if (view.firstChild !== value) {
       view.innerHTML = ""
       view.appendChild(value)
     }

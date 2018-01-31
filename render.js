@@ -20,7 +20,7 @@ render.define(Error, function(error, view) {
   return view.textContent = String(error)
 })
 
-render.define(Element, function(element, view) {
+render.implement(Element.prototype, function(element, view) {
   if (view.firstChild !== element) {
     view.innerHTML = ""
     view.appendChild(element)
